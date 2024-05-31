@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MyToken {
+    // Public variables to store the details about the coin
+    string public name;
+    string public symbol;
+    uint256 public totalSupply;
+
+    // Mapping of addresses to balances
+    mapping(address => uint256) public balances;
+
+    // Constructor to initialize the token details
+    constructor(string memory _name, string memory _symbol, uint256 _initialSupply) {
+        name = _name;
+        symbol = _symbol;
+        totalSupply = _initialSupply;
+        // Initially assign all tokens to the contract's creator
+        balances[msg.sender] = _initialSupply;
+    }
+
+    // Mint function to create new tokens
+    function mint(address _to, uint256 _value) public {
+        require(_to != address(0), "Cannot mint to the zero address");
+        totalSupply += _value;
+        balances[_to] += _value;
+        emit Transfer(address(0), _to, _value);
+    }
+
+    // Burn function to destroy tokens
+    function burn(address _from, uint256 _value) public {
+        require(_from != address(0), "Cannot burn from the zero address");
+        require(balances[_from] >= _value, "Insufficient balance to burn");
+        totalSupply -= _value;
+        balances[_from] -= _value;
+        emit Transfer(_from, address(0), _value);
+    }
+
+    // Event to log transfers (including minting and burning)
+    event Transfer(address indexed from, address indexed to, uint256 value);
+}
